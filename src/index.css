@@ -15,7 +15,7 @@ body {
 .chatbot {
   position: relative;
   width: 70%;
-  background: url(./darkMode.jpg);
+  background: url(../src/assets/darkMode.jpg);
   margin: 0 auto;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
