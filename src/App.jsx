@@ -21,7 +21,8 @@ const TextProcessor = () => {
     fr: { name: "French", flagCode: "fr" },
     es: { name: "Spanish", flagCode: "es" },
     pt: { name: "Portuguese", flagCode: "pt" },
-    zh: { name: "Chinese", flagCode: "cn" },
+    ru: { name: "Russian", flagCode: "ru" },
+    tr: { name: "Turkish", flagCode: "tr" },
   };
 
   useEffect(() => {
