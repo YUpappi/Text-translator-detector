@@ -1,0 +1,172 @@
+@import url("https://fonts.googleapis.com/css2?family=Road+Rage&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html {
+  font-size: 62.5%;
+}
+body {
+  background-color: rgba(0, 0, 0, 0.844);
+  font-family: "roboto", serif;
+}
+.chatbot {
+  position: relative;
+  width: 70%;
+  background: url(./darkMode.jpg);
+  margin: 0 auto;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  overflow-y: hidden;
+  box-shadow: 0 0 128px 0 rgba(0, 0, 0, 0.1), 0 32 64px -48px rgba(0, 0, 0, 0.5);
+}
+
+ul li {
+  list-style: none;
+  margin-bottom: 20px;
+}
+
+select {
+  width: 100%;
+  padding: 5px;
+  border: none;
+  border-radius: 5px;
+  background: rgba(0, 0, 139, 0.326);
+  color: #fff;
+}
+.chatbot header {
+  padding: 16px 0;
+  background-color: #000;
+  color: #ffffffd5;
+  font-family: "Road Rage", serif;
+  font-size: 1.8rem;
+  text-align: center;
+}
+.chatbot .chatbox {
+  height: 510px;
+  overflow-y: auto;
+  padding: 30px 20px 70px;
+}
+
+.chatbox .chat p {
+  padding-bottom: 5px;
+  font-size: 1.4rem;
+  color: #fff;
+  line-height: 1.5;
+}
+.incoming p {
+  max-width: 400px;
+
+  background-color: #333;
+  border-radius: 10px 10px 10px 0;
+  padding: 12px 8px;
+}
+.chat-input-text {
+  /* max-width: 50%; */
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 10px 10px 0 10px;
+  background-color: #000;
+  border: 1px solid #333;
+  margin-left: auto;
+  margin-block: 10px;
+}
+.outgoing {
+  max-width: 400px;
+  padding: 12px 8px;
+
+  /* margin-block: 10px; */
+  margin-left: auto;
+}
+.message-subject {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 5px;
+  /* max-width: 200px; */
+}
+.time {
+  display: flex;
+  color: #fff;
+  justify-self: flex-end;
+  padding: 5px;
+  font-size: 1rem;
+}
+.message-language {
+  color: #fff;
+}
+
+.outgoing {
+  margin-top: 20px 0;
+  justify-content: flex-start;
+}
+
+.chatbot .chat-input {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 0px 12px 0 0;
+  background-color: #000;
+  display: flex;
+  gap: 5px;
+}
+
+input {
+  width: 100%;
+  height: 55px;
+  height: 50px;
+  border: none;
+  outline: none;
+  font-size: 1.2rem;
+  padding: 16px 10px 16px;
+  font-size: 1.4rem;
+  color: #fff;
+  background-color: #000;
+  transition: color 0.3s;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin: 10px;
+}
+input::placeholder {
+  color: #333;
+  font-weight: 400;
+  font-style: italic;
+
+  padding-inline: 10px;
+}
+input:focus {
+  color: #ccc;
+}
+
+span .send-btn {
+  position: absolute;
+  right: 35px;
+  bottom: 25px;
+  font-size: 0.35rem;
+  cursor: pointer;
+  transform: translate(45deg);
+}
+.translate-btn {
+  color: #fff;
+  background-color: #666;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.translate-btn:hover {
+  background-color: #999;
+}
+.translate-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media screen and (max-width: 768px) {
+  .outgoing,
+  .incoming {
+    max-width: 250px;
+  }
+}
