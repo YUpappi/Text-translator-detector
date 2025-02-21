@@ -14,6 +14,7 @@ const TextProcessor = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [detectedLang, setDetectedLang] = useState(null);
   const [translateDisabled, setTranslateDisabled] = useState(false);
+  const [translation, setTranslation] = useState({});
   // Initialize to null
 
   const languages = {
@@ -165,12 +166,24 @@ const TextProcessor = () => {
   };
 
   const handleTranslateButtonClick = async (message, index) => {
-    const translated = await handleTranslate(message.text);
-    setMessages((prevMessages) => {
-      const updatedMessages = [...prevMessages];
-      updatedMessages[index].translation = translated;
-      return updatedMessages;
-    });
+    if (translation[index]) return;
+    try {
+      const translated = await handleTranslate(message.text);
+      setMessages((prevMessages) => {
+        const updatedMessages = [...prevMessages];
+        updatedMessages[index].translation = translated;
+        return updatedMessages;
+      });
+      setTranslation((prev) => ({ ...prev, [index]: true }));
+    } catch (err) {
+      console.error("Error in translation", err);
+      message.translation = "Translation failed.";
+      setMessages((prevMessages) => {
+        const updatedMessages = [...prevMessages];
+        updatedMessages[index] = message;
+        return updatedMessages;
+      });
+    }
   };
 
   return (
@@ -215,10 +228,16 @@ const TextProcessor = () => {
                   </select>
                   <button
                     onClick={() => handleTranslateButtonClick(message, index)}
-                    disabled={translateDisabled || isLoading}
+                    disabled={
+                      translateDisabled || isLoading || translation[index]
+                    }
                     className="translate-btn"
                   >
-                    {isLoading ? "Translating..." : "Translate"}
+                    {isLoading
+                      ? "Translating..."
+                      : translation[index]
+                      ? "Translated"
+                      : "Translate"}
                   </button>
                 </div>
 
@@ -230,7 +249,7 @@ const TextProcessor = () => {
                     <button
                       onClick={() => handleSummarizer(message.text, index)}
                       disabled={isLoading}
-                      className=" "
+                      className="translate-btn "
                     >
                       {isLoading ? "Summarizing..." : "Summarize"}
                     </button>
