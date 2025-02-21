@@ -1,16 +1,16 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const options = {
-  sharedContent: true,
+  sharedContext: "This is a scientific article",
   type: "key-points",
-  format: "plain-text",
+  format: "markdown",
   length: "medium",
 };
 const TextProcessor = () => {
   const [inputText, setInputText] = useState("");
   const [messages, setMessages] = useState([]);
   const [targetLang, setTargetLang] = useState("en");
-  const summarizer = useRef(null);
+  const summarizerRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const [detectedLang, setDetectedLang] = useState(null);
   const [translateDisabled, setTranslateDisabled] = useState(false);
@@ -30,14 +30,17 @@ const TextProcessor = () => {
   }, [detectedLang, targetLang]);
 
   useEffect(() => {
-    if (
-      !summarizer.current &&
-      typeof self !== "undefined" &&
-      self.ai &&
-      self.ai.summarizer
-    ) {
-      summarizer.current = self.ai.summarizer.create();
+    async function initSummarizer() {
+      try {
+        const available = await self.ai.summarizer.capabilities();
+        if (available.available !== "no") {
+          summarizerRef.current = await self.ai.summarizer.create(options);
+        }
+      } catch (error) {
+        console.error("Summarizer initialization failed", error);
+      }
     }
+    initSummarizer();
   }, []); // Empty dependency array ensures this runs only once on mount
 
   const handleSend = async () => {
@@ -64,7 +67,7 @@ const TextProcessor = () => {
       newMessage.language = detected;
       setDetectedLang(detected); // Update the detected language
 
-      if (text.length > 150 && detected === "en" && summarizer.current) {
+      if (text.length >= 150 && detected === "en" && summarizerRef.current) {
         // Check if summarizer is available
         const summaryResult = await handleSummarizer(text);
         newMessage.summary = summaryResult;
@@ -120,18 +123,21 @@ const TextProcessor = () => {
     }
   };
 
-  useEffect(() => {
-    const callAction = async () => {
-      summarizer.current = await ai.self.summarizer.create(options);
-    };
-    callAction();
-  }, []);
-
-  const handleSummarizer = async (userInput) => {
+  const handleSummarizer = async (text) => {
     try {
-      setIsLoading((prev) => ({ ...prev, userInput: true }));
-      const response = await summarizer.current.summarize(userInput);
-      return response.text; // Return the summary text
+      setIsLoading(true);
+      if (!summarizerRef.current) return;
+
+      const summaryResult = await summarizerRef.current.summarize(text);
+      console.log("Summary API response", summaryResult);
+      if (typeof summaryResult === "string") {
+        return summaryResult;
+      } else if (summaryResult[0] && summaryResult[0].text) {
+        return summaryResult[0].text;
+      } else if (summaryResult.summary) {
+        return summaryResult.summary;
+      }
+      return "no summary available";
     } catch (err) {
       console.error("Summarization failed", err);
       return "Summarization failed."; // Return an error message
@@ -142,6 +148,8 @@ const TextProcessor = () => {
 
   const handleTranslate = async (userInput) => {
     try {
+      if (translateDisabled) return;
+      setIsLoading(true);
       const handleTransLator = await self.ai.translator.create({
         sourceLanguage: detectedLang || "en", // Use detected language or default to 'en'
         targetLanguage: targetLang,
@@ -151,6 +159,8 @@ const TextProcessor = () => {
     } catch (error) {
       console.error("Error in translation", error);
       return "Translation failed.";
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -214,7 +224,7 @@ const TextProcessor = () => {
 
                 {/*  */}
 
-                {message.text.length > 150 &&
+                {message.text.length >= 150 &&
                   message.language === "en" &&
                   !message.summary && (
                     <button
@@ -264,15 +274,20 @@ const TextProcessor = () => {
       </ul>
 
       <div className="chat-input">
-        <input
+        <textarea
           value={inputText}
           onKeyDown={handleKeyDown}
           onChange={(e) => setInputText(e.target.value)}
           placeholder="Enter your text here..."
+          aria-label="Enter your text here"
         />
         <span>
           {inputText.length > 0 && (
-            <button onClick={handleSend} className="send-btn">
+            <button
+              onClick={handleSend}
+              className="send-btn"
+              aria-label="Send message"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
